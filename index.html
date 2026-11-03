@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Diwali DBMS Video</title>
+<style>
+:root{--bg1:#1a0638;--bg2:#4a0d2e;--gold:#ffc83d;--orange:#ff7a1a;--text:#fff4e0;--card:rgba(255,255,255,.08);box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg1:#1a0638;--bg2:#4a0d2e}}
+:root[data-theme="dark"]{--bg1:#1a0638;--bg2:#4a0d2e}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:radial-gradient(circle at 50% 30%,var(--bg2),var(--bg1));color:var(--text);font-family:Georgia,"Times New Roman",serif;overflow:hidden}
+canvas{position:fixed;inset:0;width:100%;height:100%}
+#stage{position:relative;height:100%;display:flex;align-items:center;justify-content:center;padding:24px}
+.slide{position:absolute;max-width:760px;width:calc(100% - 48px);text-align:center;opacity:0;transform:scale(.92) translateY(20px);transition:opacity .8s,transform .8s;pointer-events:none}
+.slide.on{opacity:1;transform:none}
+.diya{font-size:64px;animation:flick 1.2s infinite alternate}
+@keyframes flick{from{filter:drop-shadow(0 0 8px var(--orange))}to{filter:drop-shadow(0 0 26px var(--gold))}}
+h1{font-size:clamp(30px,7vw,58px);margin:8px 0;color:var(--gold);text-shadow:0 0 24px rgba(255,160,40,.6)}
+h2{font-size:clamp(22px,5vw,38px);margin:6px 0 4px;color:var(--gold)}
+p{font-size:clamp(16px,3.4vw,24px);line-height:1.5;margin:10px 0}
+.tag{display:inline-block;background:var(--orange);color:#2a0a00;border-radius:20px;padding:4px 16px;font-family:system-ui,sans-serif;font-weight:700;font-size:14px;letter-spacing:.08em}
+.card{background:var(--card);border:1px solid rgba(255,200,61,.35);border-radius:16px;padding:14px 18px;margin:10px 0;font-size:clamp(15px,3.2vw,22px)}
+.link{font-family:system-ui,sans-serif;font-size:clamp(20px,5vw,34px);font-weight:700;color:#2a0a00;background:var(--gold);display:inline-block;padding:12px 24px;border-radius:14px;margin-top:14px;box-shadow:0 0 30px rgba(255,200,61,.6)}
+#bar{position:fixed;left:0;right:0;height:5px;top:env(safe-area-inset-top,0px);background:rgba(255,255,255,.12)}
+#bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--orange),var(--gold))}
+#ctl{position:fixed;bottom:calc(14px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);display:flex;gap:10px;z-index:5}
+button{font:600 15px system-ui,sans-serif;background:var(--gold);color:#2a0a00;border:0;border-radius:24px;padding:10px 20px;cursor:pointer}
+</style>
+</head>
+<body>
+<canvas id="fx"></canvas>
+<div id="bar"><i id="fill"></i></div>
+<div id="stage">
+ <section class="slide"><div class="diya">🪔</div><h1>Happy Diwali!</h1><p>Light up your data skills with the<br>Database Management System (DBMS)</p><span class="tag">FESTIVAL OF DATA</span></section>
+ <section class="slide"><div class="diya">📜</div><span class="tag">CORE FUNCTION 1</span><h2>DDL: Data Definition Language</h2><p>Defines the database structure, schema and constraints.</p><div class="card">CREATE · ALTER · DROP</div></section>
+ <section class="slide"><div class="diya">✨</div><span class="tag">CORE FUNCTION 2</span><h2>DML: Data Manipulation Language</h2><p>Inserts, updates, deletes and retrieves data.</p><div class="card">INSERT · UPDATE · DELETE · SELECT</div></section>
+ <section class="slide"><div class="diya">🔐</div><span class="tag">CORE FUNCTION 3</span><h2>DCL and TCL</h2><p>Manage user permissions, security and transaction consistency (ACID properties).</p><div class="card">GRANT · REVOKE · COMMIT · ROLLBACK</div></section>
+ <section class="slide"><div class="diya">⚙️</div><span class="tag">CORE FUNCTION 4</span><h2>System Services</h2><p>Automated backups, recovery, concurrency control and multi-user access.</p></section>
+ <section class="slide"><div class="diya">🗂️</div><span class="tag">TYPE 1</span><h2>Relational DBMS (RDBMS)</h2><p>Structured tables with rows, columns, primary and foreign keys, queried via SQL.</p><div class="card">MySQL · PostgreSQL · Oracle · SQL Server</div></section>
+ <section class="slide"><div class="diya">🎆</div><span class="tag">TYPE 2</span><h2>NoSQL DBMS</h2><p>Handles unstructured or semi-structured data for rapid scaling: key-value, document, graph and wide-column.</p><div class="card">MongoDB · Cassandra · Redis</div></section>
+ <section class="slide"><div class="diya">☁️</div><span class="tag">TYPE 3</span><h2>Specialized DBMS</h2><p>Object-oriented, hierarchical, network and cloud-based databases.</p><div class="card">Amazon RDS · Snowflake</div></section>
+ <section class="slide"><div class="diya">🪔🪔🪔</div><h1>Join Diwali with</h1><div class="link">www.karmayogi.org.in</div><p>Shubh Deepavali! Keep learning, keep glowing.</p></section>
+</div>
+<div id="ctl"><button id="pp">Pause</button><button id="rs">Restart</button></div>
+<script>
+var slides=document.querySelectorAll('.slide'),N=slides.length,D=5000,cur=-1,t0=0,playing=true,paused=0;
+function show(i){cur=i;slides.forEach(function(s,k){s.classList.toggle('on',k===i)});t0=performance.now();burst()}
+var cv=document.getElementById('fx'),cx=cv.getContext('2d'),P=[];
+function size(){cv.width=innerWidth;cv.height=innerHeight}size();addEventListener('resize',size);
+function burst(){var x=Math.random()*cv.width,y=Math.random()*cv.height*.5+40,h=Math.random()*60+20;
+for(var i=0;i<60;i++){var a=Math.PI*2*i/60,v=Math.random()*3+1.5;P.push({x:x,y:y,vx:Math.cos(a)*v,vy:Math.sin(a)*v,l:1,h:h})}}
+function loop(now){
+cx.clearRect(0,0,cv.width,cv.height);
+if(playing){var e=now-t0;document.getElementById('fill').style.width=((cur+Math.min(e/D,1))/N*100)+'%';
+if(e>D){if(cur<N-1){show(cur+1)}else{playing=false;document.getElementById('pp').textContent='Replay'}}
+if(Math.random()<.03)burst()}
+for(var i=P.length-1;i>=0;i--){var p=P[i];if(playing){p.x+=p.vx;p.y+=p.vy;p.vy+=.04;p.l-=.012}
+if(p.l<=0){P.splice(i,1);continue}
+cx.fillStyle='hsla('+p.h+',100%,60%,'+p.l+')';cx.beginPath();cx.arc(p.x,p.y,2.2,0,7);cx.fill()}
+requestAnimationFrame(loop)}
+document.getElementById('pp').onclick=function(){
+if(!playing&&cur===N-1&&this.textContent==='Replay'){playing=true;show(0);this.textContent='Pause';return}
+if(playing){playing=false;paused=performance.now();this.textContent='Play'}else{playing=true;t0+=performance.now()-paused;this.textContent='Pause'}};
+document.getElementById('rs').onclick=function(){playing=true;document.getElementById('pp').textContent='Pause';show(0)};
+show(0);requestAnimationFrame(loop);
+</script>
+</body>
+</html>
